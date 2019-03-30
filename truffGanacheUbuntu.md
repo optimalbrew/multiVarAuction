@@ -17,14 +17,14 @@ https://github.com/trufflesuite/ganache-cli/blob/master/README.md
 
 ### Basic ubuntu ec2 setup
 
-Assuming 16.04  (not tried with 18 LTS yet).
+Tested on Ubuntu 16.04  or 18.04 LTS.
 
     sudo apt-get update  && sudo apt-get -y upgrade
 
 
 Optional for small/micro instances: 
 
-    free -m #to check how much memory we have
+    free -m #check how much memory we have
     sudo dd if=/dev/zero of=/swapfile bs=1M count=512
     #sudo dd if=/dev/zero of=/swapfile bs=1G count=2 
 
@@ -34,7 +34,7 @@ Optional for small/micro instances:
     sudo chmod 0600 /swapfile
 
 ### Python and devtools?
-Not needed for this eaxmple. But if needed for some other exercise.
+Not needed right away, but eventually.
 
     sudo apt install python #for python2
     sudo apt-get install build-essential #gcc
