@@ -1,4 +1,4 @@
-## Getting started Truffle and Ganache
+## Getting started with Truffle and Ganache on Ubuntu
 
 ### Truffle
 https://github.com/trufflesuite/truffle
