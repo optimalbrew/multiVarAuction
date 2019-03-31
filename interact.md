@@ -24,7 +24,7 @@ In the console
 
 then deploy to the chain
 
-    migrate
+    migrate //or deploy
 
 check the deployment via 
 
@@ -46,24 +46,45 @@ connect to the deployed contract (with same arguments as in )
 
 or to a new instance of a contract (with **new arguments** for the *constructor*)
 
-    let instance = await Auction.new(200,200,accounts[0])
+    instance = await Auction.new(60,30,accounts[9]) //30 seconds bidding and reveal time for testing.
+    let contractAddress = instance.address
+    web3.eth.getBalance(contractAddress)
+
+Example bids (with indicators for fake and nonce)
+
+    let bidVal1 = [5,10]
+    let fake1 = [false,true]
+    let secret = web3.utils.asciiToHex('secret',32)
+    let sec1 = [secret,secret]
+
+Encrypt the bid
+
+    let encBid10 = web3.utils.soliditySha3({t:'uint' , v: bidVal1[0]}, {t: 'bool', v: fake1[0]},{t:'bytes32' ,v: sec1[0]})
+    let encBid11 = web3.utils.soliditySha3({t:'uint' , v: bidVal1[1]}, {t: 'bool', v: fake1[1]},{t:'bytes32' ,v: sec1[1]})
     
-    instance = await Auction.new(200,200,accounts[0]) //if instance already declared
 
-Choose a new bid (encrypted)
+Submit  encrypted bid (with deposit) to the contract
 
-    let encBid1 = await web3.utils.keccak256('10')
+    let bid10 = instance.bid(encBid10, {from: accounts[1],value: 15})
+    web3.eth.getBalance(accounts[9]) //something other than accounts[0], as that has already spent eth as default account
+    web3.eth.getBalance(accounts[1])
+    web3.eth.getBalance(contractAddress)
 
-Submit bid to the contract
+    let bid11 = instance.bid(encBid11, {from: accounts[1],value: 12})
+    web3.eth.getBalance(accounts[9])
+    web3.eth.getBalance(accounts[1])
+    web3.eth.getBalance(contractAddress)
 
-    let bid1 = instance.bid(encBid1, {from: accounts[1],value: 15})
+Reveal bids
 
-Take a look at the transaction
+    let reveal1 = instance.reveal(bidVal1, fake1, sec1, {from: accounts[1]})
 
-    bid1
 
-Another one
-    let encBid2 = await web3.utils.keccak256('8')
-    let bid2 = instance.bid(encBid2, {from: accounts[2],value: 8})
+Ending the auction
 
-To clear all deployements use `networks --clean`
+    end = instance.auctionEnd({from: accounts[9]})
+
+    web3.eth.getBalance(accounts[9])
+    web3.eth.getBalance(accounts[1])
+    web3.eth.getBalance(contractAddress)
+
