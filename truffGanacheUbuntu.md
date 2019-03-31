@@ -95,3 +95,8 @@ Let's see if that works
 
 default port is 8545. 
 
+See chain options
+
+    ganache-cli --help 
+
+-d for deterministic -m for mnemonic to use,  number of accounts to create, gas limits, block mining time, etc

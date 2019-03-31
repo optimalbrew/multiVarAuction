@@ -4,6 +4,11 @@ Start the project
 
     truffle init
 
+or from github
+
+    git clone https://github.com/petecarkeek/multiVarAuction.git
+    cd multiVarAuction
+
 This will create basic directory structure: `contracts`, `migrations`, etc. These will contain helper programs for deployment.
 
 * Move relevant source files to contracts (Auction.sol) and migrations (2_deploy_contracts.js)
@@ -11,6 +16,11 @@ This will create basic directory structure: `contracts`, `migrations`, etc. Thes
 ### Local Test Network
 
 Get ganache started on a different termina via `ganache-cli` with host and port options, e.g. `ganache-cli -h 0.0.0.0 -p 7545`
+
+For testing, can use deterministic mode, creates the *same accounts (addresses, private keys)*.
+
+    ganache-cli -h 0.0.0.0 -p 7545 -d -m 'december picture era narrow chest flame license attitude bulk language skill stoch'
+
 
 ### Deploying to the network
 
