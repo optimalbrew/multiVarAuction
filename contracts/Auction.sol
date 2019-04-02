@@ -29,7 +29,7 @@ contract Auction {
 
     //modifiers
     modifier onlyBefore(uint _time){
-        require(now < _time);
+        require(now < _time);   //WARN: 'now' is alias for block.timestamp, does not mean current time.   
         _;
     }
 
