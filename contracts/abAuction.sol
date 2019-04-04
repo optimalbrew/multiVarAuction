@@ -1,11 +1,11 @@
-pragma solidity ^0.5.1;
+pragma solidity ^0.5.0; //0.5.0 for Truffle
 
-contract newAuction{
+contract abAuction{
     
     struct Bid {
         bytes32 hashedBid;
         uint256 bidValue;
-        uint16 days2Finish; //limited small integer range
+        uint16 days2Finish; //limited small integer range (2^16 -1), not so small
         bool isBidRevealed; //default is false
         address payable bidder; //msg.sender
         uint depositVal; //bid deposit
@@ -16,12 +16,11 @@ contract newAuction{
     Going thru all array elements is expensive. 
     If we do not have a dynamic data store, then it's hard to solve the problem 
     (keeping track of bids).
-    */
-    
+    */ 
     Bid[] private allBids; //dyn. aray
+    
     Bid private topBid; //keep track of winning bid
     
-    uint minDeposit = 1 ether; //
     Bid public winningBid;
     
     address payable public beneficiary; //seller (or buyer in procurement auction).
@@ -29,6 +28,7 @@ contract newAuction{
     uint public revealEnd; //time limit to reveal bids
     bool public ended; //indicate auction is over (default if false)
     uint public userCost; //public so auto getter function.
+    uint public minDeposit; // moved to constructor
     //track if someone has placed a bid at all
     mapping(address => Bid) public addressToBid;
     
@@ -59,12 +59,14 @@ contract newAuction{
         uint _biddingTime,
         uint _revealTime,
         address payable _beneficiary,
-        uint _userCost
+        uint _userCost,
+        uint _minDeposit
     ) public {
         beneficiary = _beneficiary;
         biddingEnd = now + _biddingTime;
         revealEnd = biddingEnd + _revealTime;
         userCost = _userCost;
+        minDeposit = _minDeposit;
     }
     
     // Bidding Phase (bids are encrypted)
@@ -72,7 +74,7 @@ contract newAuction{
     function placeBid(bytes32 hashedBid) onlyBiddingPeriod public payable {
         //input validation
         require(addressToBid[msg.sender].depositVal == 0, "error: cannot place multiple bids.");
-        require(msg.value > 0, "error: can't leave 0 deposit'.");
+        require(msg.value > minDeposit, "error: Minimum Deposit not met.");
         //temporarily store Bid
         Bid memory newBid; //allocate memory for this instance "newBid" of type Bid
         //store data on chain
@@ -112,7 +114,10 @@ contract newAuction{
         return bidValue + (userCost * days2Finish);
     }
     
-    // Selection phase
+    // Selection phase: 
+    //WARNING: TODO* 
+    //This should either be an internal function, so the money is returned from the contract, 
+    // or the contract should transfer the funds to the beneficiary.
     function awardContract() onlyBeneficiary onlySelectionPhase public  {
         //verify inputs
             //not needed at present (and taken care of by modifiers)
@@ -132,7 +137,7 @@ contract newAuction{
     }    
     
     // function to return winner's deposit (eventually)
-    function giveWinnerDeposit() onlyBeneficiary public {
+    function returnWinnerDeposit() onlyBeneficiary public {
     topBid.bidder.send(topBid.depositVal);    
     }
     
