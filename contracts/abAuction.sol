@@ -19,20 +19,22 @@ contract abAuction{
     */ 
     Bid[] private allBids; //dyn. aray
     
-    Bid private topBid; //keep track of winning bid
+    Bid private topBid; //keep track of winning bid (private?) //initialized to zero. So score is 0?
     
-    Bid public winningBid;
+    //Bid public winningBid; // 
     
     address payable public beneficiary; //seller (or buyer in procurement auction).
     uint public biddingEnd; //time limit for last bid
     uint public revealEnd; //time limit to reveal bids
     bool public ended; //indicate auction is over (default if false)
-    uint public userCost; //public so auto getter function.
+    uint public userCost; //
     uint public minDeposit; // moved to constructor
+    
+    uint topScore = 1000000000; //initial score to beat (in a seller's auction, this could be 0)
     //track if someone has placed a bid at all
     mapping(address => Bid) public addressToBid;
     
-     //modifiers
+    //modifiers
     modifier onlyBiddingPeriod(){
         require(now < biddingEnd);   //WARN: 'now' is alias for block.timestamp, does not mean current time.   
         _;
@@ -88,32 +90,35 @@ contract abAuction{
         return keccak256(abi.encodePacked(bidValue, days2Finish));
     }
     
-    // Bid Reveal phase
-    function revealBid(uint256 bidValue, uint16 days2Finish) onlyRevealPeriod public {
-        //validate inputs: hashes should match
-        address revealer = addressToBid[msg.sender].bidder;
-        //"might" not be able to compare 2 bytes32's 
-        require(calculateHashForBid(bidValue, days2Finish) == addressToBid[msg.sender].hashedBid);
-           
-        //update storage
-        Bid storage currentBid = addressToBid[revealer];
-        currentBid.bidValue = bidValue;
-        currentBid.days2Finish = days2Finish;
-        currentBid.isBidRevealed = true;
-        
-        //rank determination
-        uint scoreCurrentBid = score(bidValue,days2Finish);
-        uint topScore = score(topBid.bidValue,topBid.days2Finish);
-        if (scoreCurrentBid < topScore ) { //lower score wins here
-            topBid = currentBid;    //assignment of structs in storage may be problematic
-        }
-             
-    }
-    
+    // Scoring rule
     function score(uint bidValue, uint days2Finish) public view returns (uint){
         return bidValue + (userCost * days2Finish);
     }
     
+
+    // Bid Reveal phase
+    function revealBid(uint256 bidCost, uint16 bidTime) onlyRevealPeriod public {
+        //validate inputs: hashes should match
+        address revealer = addressToBid[msg.sender].bidder;
+        //"might" not be able to compare 2 bytes32's 
+        require(calculateHashForBid(bidCost, bidTime) == addressToBid[msg.sender].hashedBid, "error: hashes do not match.");
+           
+        //update storage
+        Bid storage currentBid = addressToBid[revealer];
+        currentBid.bidValue = bidCost;
+        currentBid.days2Finish = bidTime;
+        currentBid.isBidRevealed = true;
+        
+        //rank determination
+        uint scoreCurrentBid = score(bidCost, bidTime);
+        if (scoreCurrentBid < topScore) { //lower score wins here
+            topBid = currentBid;    //assignment of structs in storage may be problematic
+            topScore = score(topBid.bidValue,topBid.days2Finish); //from now on..
+        }
+             
+    }
+    
+
     // Selection phase: 
     //WARNING: TODO* 
     //This should either be an internal function, so the money is returned from the contract, 
@@ -141,8 +146,13 @@ contract abAuction{
     topBid.bidder.send(topBid.depositVal);    
     }
     
-    
+    //Use: debugging to estimate run time certain steps are taking.
     function getCurrentTime() public view returns(uint) {return now;}
     
-    function getCurrentTimePlus1Week() public view returns(uint) {return now + 1 weeks;}
+    //function getCurrentTimePlus1Week() public view returns(uint) {return now + 1 weeks;}
+
+    // return string from bid struct for winning bid
+    function winBid() public view returns (uint, uint, address) {
+        return (topBid.bidValue, topBid.days2Finish, topBid.bidder);
+    }
 }
