@@ -20,9 +20,7 @@ contract abAuction{
     Bid[] private allBids; //dyn. aray
     
     Bid private topBid; //keep track of winning bid (private?) //initialized to zero. So score is 0?
-    
-    //Bid public winningBid; // 
-    
+       
     address payable public beneficiary; //seller (or buyer in procurement auction).
     uint public biddingEnd; //time limit for last bid
     uint public revealEnd; //time limit to reveal bids
@@ -114,18 +112,15 @@ contract abAuction{
         if (scoreCurrentBid < topScore) { //lower score wins here
             topBid = currentBid;    //assignment of structs in storage may be problematic
             topScore = score(topBid.bidValue,topBid.days2Finish); //from now on..
-        }
-             
+        }            
     }
     
-
     // Selection phase: 
     //WARNING: TODO* 
     //This should either be an internal function, so the money is returned from the contract, 
     // or the contract should transfer the funds to the beneficiary.
     function awardContract() onlyBeneficiary onlySelectionPhase public  {
-        //verify inputs
-            //not needed at present (and taken care of by modifiers)
+        //verify inputs: not needed at present (and taken care of by modifiers)
         
         //return deposts of everyone (except winner)
         //WARN: uint8 implies #bidders < 255!

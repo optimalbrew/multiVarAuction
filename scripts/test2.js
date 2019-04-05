@@ -12,7 +12,7 @@ module.exports = async function(finished){
         
         //parameters for contract constructor
         let bidTime = 4;
-        let revealTime = 30;
+        let revealTime = 5;
         let beneficiary = accounts[9];
         let userCost = 2;  //the unit for this must match 'cost/time' e.g. $million/day       
         let minDeposit = 2000000;
@@ -110,11 +110,6 @@ module.exports = async function(finished){
         
         
         // Finalize auction outcome
-
-
-
-        
-        
 
     } catch (error) {
         console.log(error.message);
