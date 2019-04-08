@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # Set up script for Ubuntu 18.04 LTS on AWS t2 micro instance
+# assumes repo has already been cloned so this setup script is available!
+# git clone https://github.com/petecarkeek/multiVarAuction.git  
+# cd multiVarAuction
 
 sudo apt-get update
 
