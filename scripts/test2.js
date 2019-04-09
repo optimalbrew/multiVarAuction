@@ -5,7 +5,7 @@
 module.exports = async function(finished){
     const abAuction = artifacts.require("./abAuction.sol");
 
-    console.log('********* \nOkay, Here we go \n(font size!!)\n');
+    console.log('********* \nOkay, Here we go \n(Font size okay at the back?)\n');
     let instance = await abAuction.deployed();    
     try {
         let accounts = await web3.eth.getAccounts();
@@ -23,12 +23,13 @@ module.exports = async function(finished){
         let tCheck1 = await instance.getCurrentTime();
 
         let contractAddress = instance.address;
-        console.log('New Auction contract instance deployed at ' + contractAddress);
+        console.log('\n\x1b[32m%s\x1b[0m','New Auction contract instance deployed at ' + contractAddress);
         let contractBal = await web3.eth.getBalance(contractAddress);      
-        console.log('\nNew instance has balance ' + contractBal + ' wei.\n');
+        console.log('\nContract', contractAddress,'has balance ' + contractBal + ' wei.\n');
+        //console.log('\nNew instance has balance ' + contractBal + ' wei.\n');
 
-        console.log('Create some sample bids \n********');
-        console.log('For example:     let bids = [[10,2], [13,1], [7,3], [8,2]];');
+        console.log('\n\x1b[34m%s\x1b[0m','Create some sample bids \n********');
+        console.log('let bids = [[10,2], [13,1], [7,3], [8,2]];');
         // let bidValue = [10,12,7];
         // let days2Finish = [1,1,2];
         // using the first elem is bid cost (or value) and the second elem is bid time
@@ -64,7 +65,7 @@ module.exports = async function(finished){
 
         //Actual bidding (interaction with contract..)
         console.log('\n\nDeposit (3 million wei assumed, minimum is 2 million) to place a bid. These funds are held in the contract.\n********');
-        console.log('\nBalances before bidding.');
+        console.log('\n\x1b[34m%s\x1b[0m','Balances before bidding.');
         for (i = 0; i < bids.length;i++){
             let balB4Bid = await web3.eth.getBalance(accounts[i+1]);  
             console.log('Bidder',i+1, '@', accounts[i+1], 'has balance', balB4Bid);
@@ -72,7 +73,7 @@ module.exports = async function(finished){
         }
 
         //check balances after bidding
-        console.log('\nBalances after bidding.');
+        console.log('\n\x1b[34m%s\x1b[0m','Balances after bidding.');
         for (i = 0; i < bids.length;i++){
             let balAfterBid = await web3.eth.getBalance(accounts[i+1]);  
             console.log('Bidder',i+1, '@', accounts[i+1], 'has balance', balAfterBid);
@@ -80,7 +81,7 @@ module.exports = async function(finished){
 
         // contract balance    
         contractBal = await web3.eth.getBalance(contractAddress);      
-        console.log('\nContract', contractAddress,'has balance ' + contractBal + ' wei.\n');
+        console.log('\n\x1b[34m%s\x1b[0m','Contract ' + contractAddress +' has balance ' + contractBal + ' wei.\n');
 
         //get a time check
         let tCheck2 = await instance.getCurrentTime();
@@ -94,7 +95,7 @@ module.exports = async function(finished){
                 console.log('\n******');
                 for (i=0; i< bids.length;i++){
                     instance.revealBid(bids[i][0], bids[i][1], {from: accounts[i+1]});
-                    console.log('Revealed bid', i+1);
+                    console.log('\n\x1b[32m%s\x1b[0m','Bid '+ (i+1) + ' revealed.');
                 }
                 //If the above worked then we will have a top bid
                 let winningBid = await instance.winBid();
@@ -102,7 +103,7 @@ module.exports = async function(finished){
 
             }
             else {
-                console.log('\nNot yet time to reveal bids.');
+                console.log('\n\x1b[31m%s\x1b[0m','Bidding phase: Bids cannot be revealed yet.');
                 setTimeout(check, 2000); // check again in 2 secs
             }
         }
