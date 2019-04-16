@@ -139,7 +139,7 @@ contract cptAuction{
     // Selection phase: 
     function awardContract() 
     onlyBeneficiary 
-    onlySelectionPhase //comment this out
+    //onlySelectionPhase //comment this out
     public  {
         //verify inputs: not needed at present (taken care of by modifiers)
         

@@ -24,7 +24,7 @@ module.exports = async function(finished){
         //time check
         let tCheck1 = await instance.getCurrentTime();
 
-        console.log('\n\x1b[34m%s\x1b[0m','*****************************\nInitiate Contract \n*****************************');
+        console.log('\n\x1b[34m%s\x1b[0m','*****************************\nDeploy Contract  Instance\n*****************************');
        
 
 
@@ -76,7 +76,7 @@ module.exports = async function(finished){
          }    
 
         //check balances after bidding
-        console.log('\n\n\n\n\n\n\x1b[34m%s\x1b[0m','# Bidder balances after bidding (reduced by deposits + "gas").');
+        console.log('\n\n\n\n\n\n\x1b[34m%s\x1b[0m','# Bidder balances after bidding (reduced by deposits + "gas").\n');
         for (i = 0; i < bids.length;i++){
             let balAfterBid = await web3.eth.getBalance(accounts[i+1]);  
             console.log('Bidder',i+1, '@', accounts[i+1], 'has balance', web3.utils.fromWei(balAfterBid)+ ' Eth.\n');
@@ -89,7 +89,7 @@ module.exports = async function(finished){
         console.log('\x1b[34m%s\x1b[0m','Contract ' + contractAddress +' has balance ' + web3.utils.fromWei(contractBal) + ' Eth.\n');
 
 
-        console.log('\n\x1b[34m%s\x1b[0m','*********\nBidders query blockchain state (reveal phase yet?) \n*********');
+        console.log('\n\x1b[34m%s\x1b[0m','*********\nBidders query blockchain to check phase  (contract cannot self execute a "timer") \n*********');
 
         //get a time check
         let tCheck2 = await instance.getCurrentTime();
@@ -109,7 +109,7 @@ module.exports = async function(finished){
                 
                 //After bids revealed, show what they are and the result 
                 // scoring phase
-                console.log('\n\x1b[34m%s\x1b[0m','\n********************************************\n# Scoring phase: Recall that lowest score wins!!\n******************************************')
+                console.log('\n\x1b[34m%s\x1b[0m','\n********************************************\n# Scoring phase: \n##Compare Hash \n##Recall: lowest score wins!!\n******************************************')
         
                     for (i = 0; i < bids.length;i++){
                         console.log('\n\nBidder',i+1, '=> cost quote: ', bids[i][0], 'time quote:', bids[i][1], ', and overall Score: ', bidScores[i]);
@@ -117,7 +117,7 @@ module.exports = async function(finished){
         
                     // Fetch winning bid
                     let winningBid = await instance.winBid();
-                    console.log('\n\n\x1b[32m%s\x1b[0m','\nThe winning bid is (not string-ified)\n') 
+                    console.log('\n\n\x1b[32m%s\x1b[0m','\nThe winning bid is\n') 
                     console.log(winningBid);  
 
         // return deposits
