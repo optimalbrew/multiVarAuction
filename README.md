@@ -25,11 +25,11 @@ Open Zeppelin. Works fine on Ubuntu 18.04 LTS on AWS EC2 (T2 micro) instance.
 
 ### Running the demo
 
-Use `ganache-cli` to start an Ethereum client 
+Use `ganache-cli` to start an Ethereum client
 
 	ganache-cli -h 0.0.0.0 -p 7545
 
-Once the client is running and listengin on the specified port, use `truffle console` to deploy and interact with the contracts
+Once the client is running and listening on the specified port, use `truffle console` from a **different terminal** to deploy and interact with the contracts
 
 	truffle console
 
