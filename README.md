@@ -46,6 +46,11 @@ Run the demo
 
 	exec scripts/test2.js
 
+
+## Demo video
+Link to a [screen recording](https://youtu.be/p6SsUgXohes) of the demo (moderate resolution, under 5 minutes, no audio). 
+
+
 ### Background Information
 
 For additional  details regarding cost + time bidding  see [CalTrans policy directive](http://www.dot.ca.gov/pd/directive/PD-14-Cost-and-Time-Bidding.pdf). 
