@@ -120,7 +120,7 @@ module.exports = async function(finished){
                 console.log('\n\x1b[34m%s\x1b[0m','\n********************************************\n# Scoring phase: \n##Compare Hash \n##Recall: lowest score wins!!\n******************************************')
         
                     for (i = 0; i < bids.length;i++){
-                        console.log('\n\nBidder',i+1, ' with secret "', web3.utils.sha3(bidSalt[i]),  '"\n => cost quote:', bids[i][0], 'time quote:', bids[i][1],  ', and overall Score: ', bidScores[i]);
+                        console.log('\n\nBidder',i+1, ' with secret "', web3.utils.sha3(bidSalt[i]),  '"\n\n => cost quote:', bids[i][0], 'time quote:', bids[i][1],  ', and overall Score: ', bidScores[i]);
                     }
         
                     // Fetch winning bid
