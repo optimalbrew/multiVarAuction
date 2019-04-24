@@ -1,30 +1,33 @@
 pragma solidity ^0.5.0; //0.5.0 for Truffle
 
-//Cost + Time procurement auction modified from Elliot's skeleton. Initial version based on Solidity docs was unnecessarily messy.
 contract cptAuction{
     
     struct Bid {
         bytes32 hashedBid;
         uint256 bidValue;
-        uint16 time2Finish; //limited small integer range (2^16 -1), not so small
-        bytes32 bidderSalt; //to prevent rivals from brute forcing bid from hash
+        uint16 days2Finish; //limited small integer range (2^16 -1), not so small
         bool isBidRevealed; //default is false
         address payable bidder; //msg.sender
         uint256 depositVal; //bid deposit
         bool isAllowedToWithdraw; //for those not selected, return deposits
     }
-
-    // All of these 'state' variables can be accessed by anyone on a public blockchain. 
-    // Private and internal ones can be indirectly accessed by poking around a contract's storage space.  
-    // The 'private' label only hides visibility from other 'contracts'.
-    // 'public' label simply creates automatic getter functions.
+    /*
+    store all bids in an array, even though it is bad practice to use arrays in general.
+    Going thru all array elements is expensive. But if we do not have a dynamic data store, then it's hard to solve the problem 
+    (of keeping track of bids).
+    */ 
+    
+    // All of these 'state' variables can be accessed by anyone on a public blockchain. Even private and internal ones. But they have to indirectly
+    // accessed through the contract's storage space. Public ones can be accessed easily with automatic getter calls.  
+    // The private label only hides visibility from other 'contracts'.
+    // 'public' tag simply creates automatic getter functions.
     // the default is 'internal' i.e. visible only to contract and its derivatives.
     
     Bid[] private allBids; //dyn. aray // 'private': not visible to other contracts, but indirectly visible via contract's storage space.
     
     Bid private topBid; //keep track of winning bid (private?) //initialized to zero. So score is 0?
    
-    address payable public beneficiary; //Buyer in procurement auction (seller in a regular auction)).
+    address payable public beneficiary; //seller (or buyer in procurement auction).
     // payable? What should happen to funds in the contract? Contract should not have any funds left.
 
     uint public biddingEnd; //time limit for last bid
@@ -76,13 +79,13 @@ contract cptAuction{
     }
     
     // Helper to compare hash of revealed bid with previously submitted hash (encrypted or sealed bid).
-    function calculateHashForBid(uint256 bidValue, uint16 time2Finish, bytes32 bidderSalt) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(bidValue, time2Finish, bidderSalt));
+    function calculateHashForBid(uint256 bidValue, uint16 days2Finish) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(bidValue, days2Finish));
     }
     
     // Scoring rule to rank bids
-    function score(uint256 bidValue, uint16 time2Finish) public view returns (uint){
-        return bidValue + (userCost * time2Finish);
+    function score(uint bidValue, uint days2Finish) public view returns (uint){
+        return bidValue + (userCost * days2Finish);
     }
 
 
@@ -107,19 +110,18 @@ contract cptAuction{
     
         
     // Revealing bids (only during  reveal phase)
-    function revealBid(uint256 bidCost, uint16 bidTime, bytes32 bidSalt) onlyRevealPeriod public {
+    function revealBid(uint256 bidCost, uint16 bidTime) onlyRevealPeriod public {
         //validate inputs: hashes should match
         address revealer = addressToBid[msg.sender].bidder; //find sender's hashed bid (from addressToBid), then exatract the identity (which should be same)
         
         //require(revealer == msg.sender, "error: sender and bid revealer mismatch."); //should never happen.
         //"might" not be able to compare 2 bytes32's 
-        require(calculateHashForBid(bidCost, bidTime, bidSalt) == addressToBid[msg.sender].hashedBid, "error: hashes do not match.");
+        require(calculateHashForBid(bidCost, bidTime) == addressToBid[msg.sender].hashedBid, "error: hashes do not match.");
            
         //persistent storage
         Bid storage currentBid = addressToBid[revealer]; // this instance of the struct is to be stored persistently, so use 'storage' not 'memory'.
         currentBid.bidValue = bidCost;
-        currentBid.time2Finish = bidTime;
-        currentBid.bidderSalt = bidSalt; //no need to store this? Needed for verification, disputes.
+        currentBid.days2Finish = bidTime;
         currentBid.isBidRevealed = true;
         
         //rank determination:
@@ -130,7 +132,7 @@ contract cptAuction{
         uint scoreCurrentBid = score(bidCost, bidTime);
         if (scoreCurrentBid < topScore) { //lower score wins here. In case of tie, first to reveal stays on top.
             topBid = currentBid;    //assignment of structs in storage may be problematic
-            topScore = scoreCurrentBid; //score(topBid.bidValue,topBid.time2Finish); //from now on..
+            topScore = scoreCurrentBid; //score(topBid.bidValue,topBid.days2Finish); //from now on..
         }            
     }
     
@@ -168,6 +170,6 @@ contract cptAuction{
 
     // return string from bid struct for winning bid
     function winBid() public view returns (uint, uint, address) {
-        return (topBid.bidValue, topBid.time2Finish, topBid.bidder);
+        return (topBid.bidValue, topBid.days2Finish, topBid.bidder);
     }
 }
