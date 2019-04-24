@@ -31,11 +31,11 @@ module.exports = async function(finished){
         
         let contractBal = await web3.eth.getBalance(contractAddress);    
         let cBalEth = web3.utils.fromWei(contractBal);  
-        console.log('\nContract', contractAddress,'has balance ' + cBalEth + ' Eth.\n');
+    
         
         console.log('\n\x1b[32m%s\x1b[0m','"Social Cost" multiplier passed to constructor (for scoring) is ' +  userCost);
         console.log('\n\x1b[32m%s\x1b[0m','"Minimum deposit" passed to constructor is 2 Eth.'); //(weird web3 issue, 20000 X 1e14).');
-
+        console.log('\nContract', contractAddress,'has balance ' + cBalEth + ' Eth.\n');
 
 
         // bidding phase
@@ -74,6 +74,7 @@ module.exports = async function(finished){
         
 
          console.log('\n\n\n\n\n\x1b[34m%s\x1b[0m','# Bidders submit "Solidity SHA3"/Keccak256 hashes of (cost, time, secret)');
+         console.log('\n\x1b[34m%s\x1b[0m','# Secret is just SHA3() of some string');
          // Place bids (bidding phase)
          for (i = 0; i < bids.length;i++){
              instance.placeBid(hashedBid[i], {from: accounts[i+1],value: 20000*minDeposit}); //deposit should not reveal bid value (assumed same for now).
@@ -128,7 +129,7 @@ module.exports = async function(finished){
                     console.log(winningBid);  
 
             // return deposits
-            console.log('\n\x1b[34m%s\x1b[0m','************************************\n# Time to return the deposits.\n************************************\n');
+            console.log('\n\x1b[34m%s\x1b[0m','************************************\n\n\n\n# Time to return the deposits.\n************************************\n');
         
             instance.awardContract({from: beneficiary});
 
