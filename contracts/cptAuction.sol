@@ -14,16 +14,18 @@ contract cptAuction{
         bool isAllowedToWithdraw; //for those not selected, return deposits
     }
 
-    // All of these 'state' variables can be accessed by anyone on a public blockchain. 
+    // These 'state' variables can be accessed by anyone on a public blockchain. 
     // Private and internal ones can be indirectly accessed by poking around a contract's storage space.  
     // The 'private' label only hides visibility from other 'contracts'.
-    // 'public' label simply creates automatic getter functions.
+    // And 'public' label simply creates automatic getter functions.
     // the default is 'internal' i.e. visible only to contract and its derivatives.
     
     Bid[] private allBids; //dyn. aray // 'private': not visible to other contracts, but indirectly visible via contract's storage space.
     
-    Bid private topBid; //keep track of winning bid (private?) //initialized to zero. So score is 0?
+    Bid private topBid; //keep track of winning bid (private?) //initialized to zero. So score is 0! See topScore
    
+    uint topScore = 1000000000; //initial score to beat (in a seller's auction, this could be a non zero reserve price)
+
     address payable public beneficiary; //Buyer in procurement auction (seller in a regular auction)).
     // payable? What should happen to funds in the contract? Contract should not have any funds left.
 
@@ -32,9 +34,7 @@ contract cptAuction{
     bool public ended; //indicate auction is over (default if false)
     uint public userCost; // social cost of delay
     uint public minDeposit; // moved to constructor
-    
-    uint topScore = 1000000000; //initial score to beat (in a seller's auction, this could be a non zero reserve price)
-    
+        
     //mapping to track if someone has placed a bid at all
     mapping(address => Bid) public addressToBid;
     
