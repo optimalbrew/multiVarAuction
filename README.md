@@ -1,6 +1,6 @@
 ## Smart Contracts for Scoring Auctions on Ethereum 
 
-This project implements smart contracts for *Scoring Auctions* on Ethereum for the specific use case of  **"Cost + Time" bidding.** 
+This project implements smart contracts for *Scoring Auctions* on Ethereum for  **"Cost + Time" bidding.** 
 
 Cost + Time bidding is a procurement mechanism used by various state departments of transportation to incentivize contractors to minimize construction costs as well as time. In these processes, contractors submit 2-part bids that include a "price quote" (cost to complete project) and a "time quote" (days to complete the project). Bids are compared using a scoring rule that uses an estimate of the "Cost of Time". 
 
@@ -38,17 +38,13 @@ From truffle console
 	compile
 	deploy
 
-View the deployment on the test network
+View deployment on test network
 
 	networks
 
-Run the demo
+Run demo
 
 	exec scripts/test2.js
-
-
-## Demo video
-Link to a [screen recording](https://youtu.be/p6SsUgXohes) of the demo (moderate resolution, under 5 minutes, no audio). 
 
 
 ### Background Information
